@@ -27,6 +27,7 @@ header{
 }
 .login-h{
     color: #151D28;
+    align-items: center;
 }
 .login-form{
     display: flex;

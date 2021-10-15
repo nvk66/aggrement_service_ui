@@ -116,7 +116,7 @@ export default class Login extends React.Component<Props, State> {
                 </main>
 
                 <footer>
-                    <p>Copyright</p>
+                    <p>с Copyright</p>
                 </footer>
             </div>
         );
