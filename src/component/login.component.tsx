@@ -4,6 +4,8 @@ import LoginData from '../types/loginData';
 import {RouteComponentProps} from "react-router-dom";
 import {Formik, Field, Form, ErrorMessage} from "formik";
 import * as Yup from "yup";
+import './normalize.css'
+import './login.component.css';
 
 interface RouterProps {
     history: string;
@@ -95,59 +97,28 @@ export default class Login extends React.Component<Props, State> {
         };
 
         return (
-            <div className="col-md-12">
-                <div className="card card-container">
-                    <img
-                        src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-                        alt="profile-img"
-                        className="profile-img-card"
-                    />
+            <div className="body-div">
+                <header>
+                    <div className="logo">неВсеПлатежи</div>
+                </header>
+                <main>
+                    <div className="container">
+                        <h1 className="login-h">Войти в Личный Кабинет</h1>
+                        <form className="login-form">
+                            <input type="text" className="login-input" name="login" placeholder="Логин"/>
+                            <input type="text" className="login-input" name="password" placeholder="Пароль"/>
+                            <input type="submit" className="login-btn" value="Войти"/>
+                        </form>
+                        <div className="login-links">
+                            <a href="">Забыли пароль?</a>
+                            <a href="">Зарегистрироваться</a>
+                        </div>
+                    </div>
+                </main>
 
-                    <Formik
-                        initialValues={initialValues}
-                        validationSchema={this.validationSchema}
-                        onSubmit={this.handleLogin}
-                    >
-                        <Form>
-                            <div className="form-group">
-                                <label htmlFor="login">Login</label>
-                                <Field name="login" type="text" className="form-control"/>
-                                <ErrorMessage
-                                    name="login"
-                                    component="div"
-                                    className="alert alert-danger"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="password">Password</label>
-                                <Field name="password" type="password" className="form-control"/>
-                                <ErrorMessage
-                                    name="password"
-                                    component="div"
-                                    className="alert alert-danger"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
-                                    {loading && (
-                                        <span className="spinner-border spinner-border-sm"/>
-                                    )}
-                                    <span>Login</span>
-                                </button>
-                            </div>
-
-                            {message && (
-                                <div className="form-group">
-                                    <div className="alert alert-danger" role="alert">
-                                        {message}
-                                    </div>
-                                </div>
-                            )}
-                        </Form>
-                    </Formik>
-                </div>
+                <footer>
+                    <p>&copy;&nbsp;неВсеПлатежи&nbsp;&mdash; 2021</p>
+                </footer>
             </div>
         );
     }
