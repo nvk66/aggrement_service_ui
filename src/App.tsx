@@ -65,7 +65,7 @@ class App extends Component<Props, State> {
 
         return (
             <div>
-                <nav className="navbar navbar-expand navbar-dark bg-dark">
+                {/*<nav className="navbar navbar-expand navbar-dark bg-dark">*/}
                     {/*<Link to="/" className="navbar-brand">*/}
                     {/*    неВсеПлатежи*/}
                     {/*</Link>*/}
@@ -90,9 +90,9 @@ class App extends Component<Props, State> {
                     {/*        }*/}
                     {/*    </li>*/}
                     {/*</div>*/}
-                </nav>
+                {/*</nav>*/}
 
-                <div className="container mt-3">
+                <div className="overall-container">
                     {/*<Switch>*/}
                         <Route exact path="/login" component={Login}/>
                         <Route exact path="/home" component={Login}/>

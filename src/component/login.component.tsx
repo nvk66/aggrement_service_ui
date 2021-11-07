@@ -4,6 +4,7 @@ import LoginData from '../types/loginData';
 import {RouteComponentProps} from "react-router-dom";
 import {Formik, Field, Form, ErrorMessage} from "formik";
 import * as Yup from "yup";
+import './normalize.css'
 import './login.component.css';
 
 interface RouterProps {
@@ -98,7 +99,7 @@ export default class Login extends React.Component<Props, State> {
         return (
             <div className="body-div">
                 <header>
-                    <span id="logo">неВсеПлатежи</span>
+                    <div className="logo">неВсеПлатежи</div>
                 </header>
                 <main>
                     <div className="container">
@@ -116,7 +117,7 @@ export default class Login extends React.Component<Props, State> {
                 </main>
 
                 <footer>
-                    <p>с Copyright</p>
+                    <p>&copy;&nbsp;неВсеПлатежи&nbsp;&mdash; 2021</p>
                 </footer>
             </div>
         );
