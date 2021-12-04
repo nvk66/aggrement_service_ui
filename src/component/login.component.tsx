@@ -1,5 +1,5 @@
 import React, {ChangeEvent} from "react";
-import LoginService from "../service/auth-service";
+import LoginService from "../service/auth.service";
 import LoginData from '../types/loginData';
 import {RouteComponentProps} from "react-router-dom";
 import {Formik, Field, Form, ErrorMessage} from "formik";
@@ -54,7 +54,7 @@ export default class Login extends React.Component<Props, State> {
 
         LoginService.login(auth).then(
             () => {
-                this.props.history.push("/profile");
+                this.props.history.push("/merchantTable");
                 window.location.reload();
             },
             error => {

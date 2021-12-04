@@ -1,5 +1,7 @@
 import http from "../http-common";
+import instance from "./api.service";
 import loginDada from "../types/loginData"
+import userData from "../types/userData"
 
 class AuthService {
     parseJwt(token: string) {
@@ -11,9 +13,10 @@ class AuthService {
     }
 
     login(auth: loginDada) {
-        return http
-            .post("login", {
-                auth
+        return instance
+            .post<userData>('login', {
+                login: auth.login,
+                password: auth.password
             })
             .then(response => {
                 if (response.data.accessToken) {
@@ -22,7 +25,8 @@ class AuthService {
                         login: parsedToken.sub,
                         roles: parsedToken.roles,
                         accessToken: response.data.accessToken,
-                        refreshToken: response.data.refreshToken
+                        refreshToken: response.data.refreshToken,
+                        expireDataAccessToken: parsedToken.exp
                     }
                     console.log(user);
                     localStorage.setItem('user', JSON.stringify(user));

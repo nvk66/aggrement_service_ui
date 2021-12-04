@@ -3,13 +3,17 @@ import {Switch, Route, Link} from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-import AuthVerify from "./common/auth-verify"
-import AuthService from "./service/auth-service";
+// import AuthVerify from "./common/auth-verify"
+import AuthService from "./service/auth.service";
 import UserData from './types/userData';
 
 import Login from "./component/login.component";
+import Merchant from "./component/merchant/merchant.component";
+import Provider from "./component/provider/provider.component";
 
 import EventBus from "./common/EventBus";
+import MerchantsTable from "./component/merchant/merchant.component.table";
+import ProvidersTable from "./component/provider/provider.component.table";
 
 type Props = {};
 
@@ -65,38 +69,43 @@ class App extends Component<Props, State> {
 
         return (
             <div>
-                <nav className="navbar navbar-expand navbar-dark bg-dark">
-                    {/*<Link to="/" className="navbar-brand">*/}
-                    {/*    неВсеПлатежи*/}
-                    {/*</Link>*/}
-                    {/*<div className="navbar-nav mr-auto">*/}
-                    {/*    <li className="nav-item">*/}
-                    {/*        <Link to="/home" className="nav-link">*/}
-                    {/*            Home*/}
-                    {/*        </Link>*/}
-                    {/*    </li>*/}
-                    {/*</div>*/}
+                {currentUser ?
+                    <nav className="navbar navbar-expand navbar-dark bg-dark">
+                        {/*<Link to="/" className="navbar-brand">*/}
+                        {/*    неВсеПлатежи*/}
+                        {/*</Link>*/}
+                        {/*<div className="navbar-nav mr-auto">*/}
+                        {/*    <li className="nav-item">*/}
+                        {/*        <Link to="/home" className="nav-link">*/}
+                        {/*            Home*/}
+                        {/*        </Link>*/}
+                        {/*    </li>*/}
+                        {/*</div>*/}
 
-                    {/*<div className="navbar-nav ml-auto">*/}
-                    {/*    <li className="nav-item">*/}
-                    {/*        {currentUser ? (*/}
-                    {/*            <a href="/login" className="nav-link" onClick={this.logOut}>*/}
-                    {/*                LogOut*/}
-                    {/*            </a>*/}
-                    {/*        ) : (*/}
-                    {/*            <a href="/login" className="nav-link" onClick={this.logOut}>*/}
-                    {/*                LogOut*/}
-                    {/*            </a>)*/}
-                    {/*        }*/}
-                    {/*    </li>*/}
-                    {/*</div>*/}
-                </nav>
+                        {/*<div className="navbar-nav ml-auto">*/}
+                        {/*    <li className="nav-item">*/}
+                        {/*        {currentUser ? (*/}
+                        {/*            <a href="/login" className="nav-link" onClick={this.logOut}>*/}
+                        {/*                LogOut*/}
+                        {/*            </a>*/}
+                        {/*        ) : (*/}
+                        {/*            <a href="/login" className="nav-link" onClick={this.logOut}>*/}
+                        {/*                LogOut*/}
+                        {/*            </a>)*/}
+                        {/*        }*/}
+                        {/*    </li>*/}
+                        {/*</div>*/}
+                    </nav> : (<div/>)
+                }
 
                 <div className="container mt-3">
-                    {/*<Switch>*/}
+                    <Switch>
                         <Route exact path="/login" component={Login}/>
-                        <Route exact path="/home" component={Login}/>
-                    {/*</Switch>*/}
+                        <Route exact path="/merchant" component={Merchant}/>
+                        <Route exact path="/merchantTable" component={MerchantsTable}/>
+                        <Route exact path="/providerTable" component={ProvidersTable}/>
+                        <Route exact path="/provider" component={Provider}/>
+                    </Switch>
                 </div>
 
                 {/*{<AuthVerify logOut={this.logOut}/>}*/}
