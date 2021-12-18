@@ -1,4 +1,3 @@
-import http from "../http-common";
 import instance from "./api.service";
 import merchantData from "../types/merchantData"
 
@@ -6,7 +5,12 @@ const merchantUrl = 'merchants/';
 
 const getMerchant = (id: any) => {
     return instance
-        .get(merchantUrl + id)
+        .get<merchantData>(merchantUrl + id)
+}
+
+const getAll = () => {
+    return instance
+        .get<merchantData[]>(merchantUrl + 'all')
 }
 
 const deleteMerchant = (id: any) => {
@@ -50,6 +54,7 @@ const MerchantService = {
     updateMerchant,
     deleteMerchant,
     getMerchant,
+    getAll,
 };
 
 export default MerchantService;

@@ -3,9 +3,9 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import {useEffect, useState} from "react";
-import MerchantData from "../../types/merchantData";
+import ProviderData from "../../types/providerData";
 import {Button, TextField} from "@mui/material";
-import MerchantService from "../../service/merchant.service";
+import ProviderService from "../../service/provider.service";
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 
 const style = {
@@ -20,54 +20,55 @@ const style = {
     p: 4,
 };
 
-interface MerchantModalProps {
+interface ProviderModalProps {
     onClose: () => void;
     isModalVisible: boolean;
-    merchantData: MerchantData;
+    providerData: ProviderData;
 }
 
-const MerchantModal: React.FC<MerchantModalProps> = ({
+const ProviderModal: React.FC<ProviderModalProps> = ({
                                                          isModalVisible,
                                                          onClose,
-                                                         merchantData,
+                                                         providerData,
                                                      }) => {
-    const [merchant, setMerchant] = useState(merchantData);
+    const [provider, setProvider] = useState(providerData);
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (prop: keyof MerchantData) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        setMerchant({...merchant, [prop]: event.target.value});
+    const handleChange = (prop: keyof ProviderData) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        setProvider({...provider, [prop]: event.target.value});
     };
 
-    console.log(merchant)
-    console.log(merchantData)
+    console.log(provider)
+    console.log(providerData)
 
     const save = () => {
         setLoading(true);
 
-        if (!merchant.id) {
-            merchant.id = merchantData.id;
+        if (!provider.id) {
+            provider.id = providerData.id;
         }
-        if (!merchant.guid) {
-            merchant.guid = merchantData.guid;
+        if (!provider.guid) {
+            provider.guid = providerData.guid;
         }
-        if (!merchant.name) {
-            merchant.name = merchantData.name;
+        if (!provider.name) {
+            provider.name = providerData.name;
         }
-        if (!merchant.phoneNumber) {
-            merchant.phoneNumber = merchantData.phoneNumber;
+        if (!provider.phoneNumber) {
+            provider.phoneNumber = providerData.phoneNumber;
         }
 
-        merchant.id ?
-            MerchantService.updateMerchant(merchant.id, merchant).then((response) => {
-                // props.history.push("/merchantTable");
+        provider.id ?
+            ProviderService.updateProvider(provider.id, provider).then((response) => {
+                // props.history.push("/providerTable");
                 setLoading(false);
                 onClose();
             }).catch((e) => {
                 setLoading(false);
                 console.log(e);
+
             }) :
-            MerchantService.addMerchant(merchant).then((response) => {
-                // props.history.push("/merchantTable");
+            ProviderService.addProvider(provider).then((response) => {
+                // props.history.push("/providerTable");
                 setLoading(false);
                 onClose();
             }).catch((e) => {
@@ -88,7 +89,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({
                  autoComplete="off"
             >
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    {merchantData.guid ? 'Update merchant' : 'Create merchant'}
+                    {providerData.guid ? 'Update provider' : 'Create provider'}
                 </Typography>
                 <div>
                     <TextField
@@ -96,7 +97,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({
                         id="guid"
                         color="secondary"
                         label="Guid"
-                        defaultValue={merchantData.guid}
+                        defaultValue={providerData.guid}
                         margin="normal"
                         onChange={handleChange('guid')}
                     />
@@ -107,7 +108,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({
                         id="name"
                         color="secondary"
                         label="Name"
-                        defaultValue={merchantData.name}
+                        defaultValue={providerData.name}
                         margin="normal"
                         onChange={handleChange('name')}
                     />
@@ -118,7 +119,7 @@ const MerchantModal: React.FC<MerchantModalProps> = ({
                         id="phoneNumber"
                         color="secondary"
                         label="Phone Number"
-                        defaultValue={merchantData.phoneNumber}
+                        defaultValue={providerData.phoneNumber}
                         margin="normal"
                         onChange={handleChange('phoneNumber')}
                     />
@@ -134,9 +135,17 @@ const MerchantModal: React.FC<MerchantModalProps> = ({
                         Save
                     </LoadingButton>
                 </div>
+
+                {/*<Button></Button>*/}
+                {/*<Typography id="modal-modal-title" variant="h6" component="h2">*/}
+                {/*    Text in a modal*/}
+                {/*</Typography>*/}
+                {/*<Typography id="modal-modal-description" sx={{mt: 2}}>*/}
+                {/*    Duis mollis, est non commodo luctus, nisi erat porttitor ligula.*/}
+                {/*</Typography>*/}
             </Box>
         </Modal>
     );
 };
 
-export default MerchantModal;
+export default ProviderModal;

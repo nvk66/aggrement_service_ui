@@ -1,3 +1,4 @@
+import {Switch} from "@mui/material";
 import React, {useState, useEffect, useMemo, useRef, ChangeEvent} from "react";
 import Pagination from "@material-ui/lab/Pagination";
 import MerchantService from "../../service/merchant.service";
@@ -5,7 +6,6 @@ import MerchantData from "../../types/merchantData";
 import UserData from "../../types/userData";
 import {RouteComponentProps} from "react-router-dom";
 import {Column, useTable} from "react-table";
-import {Button, Switch} from "@mui/material";
 import SearchType from "../../types/searchType";
 import InputMask from "react-input-mask";
 import MerchantModal from "./merchant.modal";
@@ -138,7 +138,6 @@ const MerchantsTable = (props: Props, state: State) => {
         // const id = merchantsRef.current[rowIndex].id;
         //
         // props.history.push("/merchants/" + id);
-        console.log("111")
         setIsModalVisible(true);
         setSelected(merchantsRef.current[rowIndex]);
         // return (
@@ -155,7 +154,7 @@ const MerchantsTable = (props: Props, state: State) => {
 
         MerchantService.deleteMerchant(id)
             .then((response) => {
-                props.history.push("/merchantTable");
+                // props.history.push("/merchantTable");
                 let newMerchants: Array<MerchantData> = [...merchantsRef.current];
                 newMerchants.splice(rowIndex, 1);
 
@@ -227,19 +226,26 @@ const MerchantsTable = (props: Props, state: State) => {
                     const rowIdx = Number(props.row.id);
                     return (
                         <div>
-                            <span onClick={() => openMerchant(rowIdx)}>
-                                <i className="far fa-edit action mr-2"/>vjvj
-                            </span>
-
-                            <span onClick={() => deleteMerchant(rowIdx)}>
-                                <i className="fas fa-trash action"/>bb
-                            </span>
+                            <button
+                                className="btn btn-outline-secondary"
+                                type="button"
+                                onClick={() => openMerchant(rowIdx)}
+                            >
+                                Change
+                            </button>
+                            <button
+                                className="btn btn-outline-secondary ml-1"
+                                type="button"
+                                onClick={() => deleteMerchant(rowIdx)}
+                            >
+                                Delete
+                            </button>
                         </div>
                     );
                 },
-                maxWidth: 200,
+                maxWidth: 400,
                 minWidth: 100,
-                width: 200
+                width: 300
             },
         ],
         []
@@ -333,7 +339,7 @@ const MerchantsTable = (props: Props, state: State) => {
                     {/*    value={search?.phoneNumber ? search.phoneNumber : ''}*/}
                     {/*    onChange={this.onChangeSearchPhoneNumber}*/}
                     {/*/>*/}
-                    <InputMask mask='+4(999) 999 9999'
+                    <InputMask mask='+7(999) 999 9999'
                                className="form-control"
                                placeholder="Phone number"
                                value={search?.phoneNumber ? search.phoneNumber : ''}
@@ -341,13 +347,6 @@ const MerchantsTable = (props: Props, state: State) => {
                     </InputMask>
                 </div>
                 <div className="input-group mb-3">
-                    {/*<input*/}
-                    {/*    type="text"*/}
-                    {/*    className="form-control"*/}
-                    {/*    placeholder="Search by title"*/}
-                    {/*    value={searchTitle}*/}
-                    {/*    onChange={onChangeSearchTitle}*/}
-                    {/*/>*/}
                     <div className="input-group">
                         <button
                             className="btn btn-outline-secondary"
@@ -355,6 +354,15 @@ const MerchantsTable = (props: Props, state: State) => {
                             onClick={findByTitle}
                         >
                             Search
+                        </button>
+                    </div>
+                    <div className="mt-1">
+                        <button
+                            className="btn btn-outline-secondary"
+                            type="button"
+                            onClick={createMerchant}
+                        >
+                            Create
                         </button>
                     </div>
                 </div>
@@ -403,7 +411,7 @@ const MerchantsTable = (props: Props, state: State) => {
                         color="secondary"
                     />
                 </div>
-                <MerchantModal onClose={onBackdropClick} isModalVisible={isModalVisible} merchantData={selected} />
+                <MerchantModal onClose={onBackdropClick} isModalVisible={isModalVisible} merchantData={selected}/>
 
                 <table
                     {...getTableProps()}

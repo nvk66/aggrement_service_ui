@@ -1,27 +1,28 @@
+import {Switch} from "@mui/material";
 import React, {useState, useEffect, useMemo, useRef, ChangeEvent} from "react";
 import Pagination from "@material-ui/lab/Pagination";
-import ProviderService from "../../service/provider.service";
-import ProviderData from "../../types/providerData";
+import AgreementService from "../../service/agreement.service";
+import AgreementData from "../../types/agreementData";
 import UserData from "../../types/userData";
 import {RouteComponentProps} from "react-router-dom";
 import {Column, useTable} from "react-table";
-import {Switch} from "@mui/material";
 import SearchType from "../../types/searchType";
 import InputMask from "react-input-mask";
-import MerchantModal from "../merchant/merchant.modal";
-import ProviderModal from "./provider.modal";
+import ProviderService from "../../service/provider.service";
+import MerchantService from "../../service/merchant.service";
 import MerchantData from "../../types/merchantData";
+import AgreementModal from "./agreement.modal";
 
-type Search = {} & SearchType & ProviderData;
+type Search = {} & SearchType & AgreementData;
 
 type Props = {} & RouteComponentProps;
 
 type State = {
-    providers: Array<ProviderData>,
-    filteredProviders: Array<ProviderData>,
-    currentProvider: ProviderData | null,
+    agreements: Array<AgreementData>,
+    filteredAgreements: Array<AgreementData>,
+    currentAgreement: AgreementData | null,
     currentIndex: number,
-    search: ProviderData | null,
+    search: AgreementData | null,
     currentUser: UserData | null,
     redirect: string | null,
     page: number,
@@ -31,12 +32,14 @@ type State = {
     totalPages: number
 };
 
-const ProvidersTable = (props: Props, state: State) => {
-    const [providers, setProviders] = useState<Array<ProviderData>>([]);
-    const providersRef = useRef<Array<ProviderData>>([]);
+const AgreementsTable = (props: Props, state: State) => {
+    const [agreements, setAgreements] = useState<Array<AgreementData>>([]);
+    const agreementsRef = useRef<Array<AgreementData>>([]);
     const [pageSizes] = useState<Array<number>>([3, 20, 25]);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selected, setSelected] = useState<ProviderData>({});
+    const [selected, setSelected] = useState<AgreementData>({});
+    const [merchants, setMerchants] = useState<Array<MerchantData>>([]);
+    const [providers, setProviders] = useState<Array<MerchantData>>([]);
 
     const [page, setPage] = useState(1);
     const [size, setSize] = useState(3);
@@ -44,50 +47,41 @@ const ProvidersTable = (props: Props, state: State) => {
     const [search, setSearch] = useState<Search>({
         page: 1,
         size: 3
-    })
+    });
 
-    providersRef.current = providers;
+    agreementsRef.current = agreements;
 
-    const retrieveProviders = () => {
+    const retrieveAgreements = () => {
         const params = getRequestParams(page, size);
 
         const requestString = prepareStringRequest(params);
 
-        ProviderService.getAllProviders(requestString)
+        AgreementService.getAllAgreements(requestString)
             .then((response) => {
-                setProviders(response.data.content);
+                setAgreements(response.data.content);
                 setTotalPages(response.data.totalPages);
 
                 console.log(response.data);
             }).catch((e) => {
             console.log(e);
         });
+        findAllMerchants();
+        findAllProviders();
     };
 
-    useEffect(retrieveProviders, [page, size]);
+    useEffect(retrieveAgreements, [page, size]);
 
     const getRequestParams = (page: number, size: number) => {
-        // let params = {page, size};
-
         setSearch({page: 0, size: 0});
-
-        // let search: Search = {page: 0, size: 0};
-
-        // if (searchTitle) {
-        //     params["title"] = searchTitle;
-        // }
 
         if (page) {
             search.page = page - 1;
-            // params['page'] = page - 1;
         }
 
         if (size) {
             search.size = size;
-            // params['size'] = size;
         }
 
-        // return params;
         return search;
     };
 
@@ -109,58 +103,97 @@ const ProvidersTable = (props: Props, state: State) => {
         return requestString;
     }
 
-    const handleActivityChange = (rowIndex: number) => {
-        const id = providersRef.current[rowIndex].id;
-
-        ProviderService.changeActivity(id)
-            .then((response) => {
-                // props.history.push("/providerTable");
-                let newProviders: Array<ProviderData> = [...providersRef.current];
-                newProviders[rowIndex] = response.data;
-                setProviders(newProviders);
-            }).catch((e) => {
-            console.log(e);
-        });
-    };
-
     const refreshList = () => {
-        retrieveProviders();
-    };
-
-    const findByTitle = () => {
-        setPage(1);
-        retrieveProviders();
+        retrieveAgreements();
     };
 
     const onBackdropClick = () => {
         setIsModalVisible(false)
     }
 
-
-    const openProvider = (rowIndex: number) => {
+    const openAgreement = (rowIndex: number) => {
         setIsModalVisible(true);
-        setSelected(providersRef.current[rowIndex]);
+        setSelected(agreementsRef.current[rowIndex]);
     };
 
-    const createProvider = () => {
+    const createAgreement = () => {
         setIsModalVisible(true);
     }
 
-    const deleteProvider = (rowIndex: number) => {
-        const id = providersRef.current[rowIndex].id;
+    const deleteAgreement = (rowIndex: number) => {
+        const id = agreementsRef.current[rowIndex].id;
 
-        ProviderService.deleteProvider(id)
+        AgreementService.deleteAgreement(id)
             .then((response) => {
-                props.history.push("/providerTable");
-                let newProviders: Array<ProviderData> = [...providersRef.current];
-                newProviders.splice(rowIndex, 1);
+                // props.history.push("/agreementTable");
+                let newAgreements: Array<AgreementData> = [...agreementsRef.current];
+                newAgreements.splice(rowIndex, 1);
 
-                setProviders(newProviders);
+                setAgreements(newAgreements);
 
             }).catch((e) => {
             console.log(e);
         });
     };
+
+    const getProvider = (rowIndex: number) => {
+        const id = agreementsRef.current[rowIndex].providerId;
+
+        let guid: any = '';
+
+        ProviderService.getProvider(id)
+            .then((response) => {
+                guid = response.data.guid;
+            }).catch((e) => {
+            console.log(e);
+        });
+        return (
+            <span>{guid}</span>
+        );
+    }
+
+    const getMerchant = (rowIndex: number) => {
+        const id = agreementsRef.current[rowIndex].merchantId;
+        //
+        // let guid: any = '';
+        //
+        // MerchantService.getMerchant(id)
+        //     .then((response) => {
+        //         guid = response.data.guid;
+        //     }).catch((e) => {
+        //     console.log(e);
+        // });
+
+        const merchant = merchants.find(merchant => merchant.id === id)
+
+        const guid = merchant ? merchant.guid : '';
+
+        console.log('!!!')
+        console.log(guid)
+
+        return (
+            <span>{guid}</span>
+        );
+    }
+
+    const findAllProviders = () => {
+        ProviderService.getAll()
+            .then((response) => {
+                setProviders(response.data);
+            }).catch((e) => {
+            console.log(e);
+        });
+
+    }
+
+    const findAllMerchants = () => {
+        MerchantService.getAll()
+            .then((response) => {
+                setMerchants(response.data);
+            }).catch((e) => {
+            console.log(e);
+        });
+    }
 
     const handlePageChange = (event: ChangeEvent<unknown>, value: number) => {
         setPage(value);
@@ -171,40 +204,47 @@ const ProvidersTable = (props: Props, state: State) => {
         setPage(1);
     };
 
-    const columns: Column<ProviderData>[] = useMemo(() => [
+    const columns: Column<AgreementData>[] = useMemo(() => [
+            // {
+            //     Header: 'Merchant Guid',
+            //     accessor: 'merchantId',
+            //     Cell: (props) => {
+            //         const rowIdx = Number(props.row.id);
+            //         const merchant = merchants.find(merchant => merchant.id === agreementsRef.current[rowIdx].merchantId);
+            //
+            //         const guid = merchant ? merchant.guid : '';
+            //
+            //         return (
+            //             <div>
+            //                 <div>
+            //                     {guid}
+            //                 </div>
+            //             </div>
+            //         );
+            //     },
+            //     maxWidth: 200,
+            //     minWidth: 100,
+            //     width: 200
+            // },
+            // {
+            //     Header: 'Provider Guid',
+            //     accessor: 'providerId',
+            //     Cell: (props) => {
+            //         const rowIdx = Number(props.row.id);
+            //         return (
+            //             <div>
+            //                 <div onLoad={() => getProvider(rowIdx)}>
+            //                 </div>
+            //             </div>
+            //         );
+            //     },
+            //     maxWidth: 200,
+            //     minWidth: 100,
+            //     width: 200
+            // },
             {
-                Header: 'Activity',
-                accessor: 'active',
-                Cell: props => {
-                    const rowIdx = Number(props.row.id);
-                    const activity = props.cell.row.original.active;
-                    return (
-                        <div>
-                            <Switch checked={activity} onChange={() => handleActivityChange(rowIdx)} color="secondary"/>
-                        </div>
-                    );
-                },
-                maxWidth: 120,
-                minWidth: 80,
-                width: 100
-            },
-            {
-                Header: 'Guid',
-                accessor: 'guid',
-                maxWidth: 200,
-                minWidth: 100,
-                width: 200
-            },
-            {
-                Header: 'Phone number',
-                accessor: 'phoneNumber',
-                maxWidth: 200,
-                minWidth: 100,
-                width: 200
-            },
-            {
-                Header: 'Name',
-                accessor: 'name',
+                Header: 'Description',
+                accessor: 'description',
                 maxWidth: 200,
                 minWidth: 100,
                 width: 200
@@ -217,32 +257,40 @@ const ProvidersTable = (props: Props, state: State) => {
                 width: 200
             },
             {
+                Header: 'Status',
+                accessor: 'status',
+                maxWidth: 200,
+                minWidth: 100,
+                width: 200
+            },
+            {
                 Header: 'Actions',
                 accessor: 'id',
                 Cell: (props) => {
                     const rowIdx = Number(props.row.id);
                     return (
                         <div>
+                            <span>Id: {agreementsRef.current[rowIdx].merchantId}</span>
                             <button
-                                className="btn btn-outline-secondary"
+                                className="btn btn-outline-secondary ml-1"
                                 type="button"
-                                onClick={() => openProvider(rowIdx)}
+                                onClick={() => openAgreement(rowIdx)}
                             >
-                                Change
+                                View
                             </button>
                             <button
                                 className="btn btn-outline-secondary ml-1"
                                 type="button"
-                                onClick={() => deleteProvider(rowIdx)}
+                                onClick={() => deleteAgreement(rowIdx)}
                             >
                                 Delete
                             </button>
                         </div>
                     );
                 },
-                maxWidth: 200,
+                maxWidth: 400,
                 minWidth: 100,
-                width: 200
+                width: 300
             },
         ],
         []
@@ -254,110 +302,20 @@ const ProvidersTable = (props: Props, state: State) => {
         headerGroups,
         rows,
         prepareRow,
-    } = useTable<ProviderData>({
+    } = useTable<AgreementData>({
         columns,
-        data: providers,
+        data: agreements,
     });
-
-    const onChangeSearchGuid = (e: ChangeEvent<HTMLInputElement>) => {
-        const guid = e.target.value;
-
-        setSearch({
-            ...search,
-            guid: guid
-        })
-    }
-
-    const onChangeSearchName = (e: ChangeEvent<HTMLInputElement>) => {
-        const name = e.target.value;
-
-        setSearch({
-            ...search,
-            name: name
-        })
-    }
-
-    const onChangeSearchPhoneNumber = (e: ChangeEvent<HTMLInputElement>) => {
-        const phoneNumber = e.target.value;
-
-        setSearch({
-            ...search,
-            phoneNumber: phoneNumber
-        })
-    }
-
-    const onChangeSearchIsActive = (e: ChangeEvent<HTMLInputElement>) => {
-        const isActive: boolean = Boolean(e.target.value);
-
-        function filterProviders(isActive: boolean) {
-            return [];
-        }
-
-        setSearch({
-            ...search,
-            active: isActive
-        })
-
-        // this.setState({
-        //     search: {
-        //         active: isActive
-        //     },
-        //     filteredProviders: filterProviders(isActive)
-        // });
-    }
-
 
     return (
         <div className="list row">
             <div className="col-md-8">
                 <div className="input-group mb-3">
-                    <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Guid"
-                        value={search?.guid ? search.guid : ''}
-                        onChange={onChangeSearchGuid}
-                    />
-                </div>
-                <div className="input-group mb-3">
-                    <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Name"
-                        value={search?.name ? search.name : ''}
-                        onChange={onChangeSearchName}
-                    />
-                </div>
-                <div className="input-group mb-3">
-                    {/*<input*/}
-                    {/*    type="text"*/}
-                    {/*    className="form-control"*/}
-                    {/*    placeholder="Phone number"*/}
-                    {/*    value={search?.phoneNumber ? search.phoneNumber : ''}*/}
-                    {/*    onChange={this.onChangeSearchPhoneNumber}*/}
-                    {/*/>*/}
-                    <InputMask mask='+4(999) 999 9999'
-                               className="form-control"
-                               placeholder="Phone number"
-                               value={search?.phoneNumber ? search.phoneNumber : ''}
-                               onChange={onChangeSearchPhoneNumber}>
-                    </InputMask>
-                </div>
-                <div className="input-group mb-3">
-                    <div className="input-group">
-                        <button
-                            className="btn btn-outline-secondary"
-                            type="button"
-                            onClick={findByTitle}
-                        >
-                            Search
-                        </button>
-                    </div>
                     <div className="mt-1">
                         <button
                             className="btn btn-outline-secondary"
                             type="button"
-                            onClick={createProvider}
+                            onClick={createAgreement}
                         >
                             Create
                         </button>
@@ -388,10 +346,13 @@ const ProvidersTable = (props: Props, state: State) => {
                         color="secondary"
                     />
                 </div>
-                <ProviderModal
+                <AgreementModal
                     onClose={onBackdropClick}
                     isModalVisible={isModalVisible}
-                    providerData={selected}
+                    agreementData={selected}
+                    merchants={merchants}
+                    providers={providers}
+
                 />
 
                 <table
@@ -438,4 +399,4 @@ const ProvidersTable = (props: Props, state: State) => {
     );
 };
 
-export default ProvidersTable;
+export default AgreementsTable;

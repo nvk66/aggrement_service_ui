@@ -14,6 +14,7 @@ import Provider from "./component/provider/provider.component";
 import EventBus from "./common/EventBus";
 import MerchantsTable from "./component/merchant/merchant.component.table";
 import ProvidersTable from "./component/provider/provider.component.table";
+import AgreementsTable from "./component/agreement/agreement.component.table";
 
 type Props = {};
 
@@ -104,6 +105,7 @@ class App extends Component<Props, State> {
                         <Route exact path="/merchant" component={Merchant}/>
                         <Route exact path="/merchantTable" component={MerchantsTable}/>
                         <Route exact path="/providerTable" component={ProvidersTable}/>
+                        <Route exact path="/agreementTable" component={AgreementsTable}/>
                         <Route exact path="/provider" component={Provider}/>
                     </Switch>
                 </div>

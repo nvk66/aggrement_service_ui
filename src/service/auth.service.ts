@@ -1,4 +1,3 @@
-import http from "../http-common";
 import instance from "./api.service";
 import loginDada from "../types/loginData"
 import userData from "../types/userData"

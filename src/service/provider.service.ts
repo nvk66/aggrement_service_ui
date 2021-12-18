@@ -5,7 +5,12 @@ const providerUrl = 'providers/';
 
 const getProvider = (id: any) => {
     return instance
-        .get(providerUrl + id)
+        .get<providerData>(providerUrl + id)
+}
+
+const getAll = () => {
+    return instance
+        .get<providerData[]>(providerUrl + 'all')
 }
 
 const deleteProvider = (id: any) => {
@@ -49,6 +54,7 @@ const ProviderService = {
     updateProvider,
     deleteProvider,
     getProvider,
+    getAll,
 };
 
 export default ProviderService;
